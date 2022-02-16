@@ -68,6 +68,12 @@ class vgg(nn.Module):
     pass
 
 
-def get_model(args):
-    model = None
-    return model
+def get_model(model_type):
+    if model_type == 'baseline':
+        return baseline()
+    if model_type == 'custom':
+        return custom()
+    if model_type == 'resnet':
+        return resnet()
+    if model_type == 'vgg':
+        return vgg()
