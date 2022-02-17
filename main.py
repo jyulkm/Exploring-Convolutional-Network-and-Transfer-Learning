@@ -73,6 +73,8 @@ def main(args):
     model, criterion, optimizer, lr_scheduler = prepare_model(device, args)
     
     model = train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
+    
+    print('Done')
 
 if __name__ == '__main__':
     main(args)

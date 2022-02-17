@@ -44,31 +44,27 @@ class FoodDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_dataset(csv_path, transform):
-        return FoodDataset(csv_path, transform)
+def get_dataset(csv_path, transform):
+    return FoodDataset(csv_path, transform)
 
-    def create_dataloaders(train_set, val_set, test_set, args=None):
-        train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
-        val_dataloder = DataLoader(val_set, batch_size=64, shuffle=True)
-        test_dataloader = DataLoader(test_set, batch_size=64, shuffle=True)
+def create_dataloaders(train_set, val_set, test_set, args=None):
+    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
+    val_dataloder = DataLoader(val_set, batch_size=64, shuffle=True)
+    test_dataloader = DataLoader(test_set, batch_size=64, shuffle=True)
 
-        return train_dataloader, val_dataloder, test_dataloader
+    return train_dataloader, val_dataloder, test_dataloader
 
-    def get_dataloaders(train_csv, test_csv, args=None):
-        train_set = self.get_dataset(train_csv, self.transform)
-        test_set = self.get_dataset(test_csv, self.transform)
-
-        # splits train_set to train_set and val_set
-        train_subset, val_subset = train_val_split(train_set)
-
-        train_dataloader, val_dataloder, test_dataloader = create_dataloaders(
-            train_subset, val_subset, test_set, args)
+def get_dataloaders(train_csv, test_csv, args=None):
+    train_dataset = get_dataset(train_csv, transform_test)
 
     ########## DO NOT change the following two lines ##########
     # If you change it to achieve better results, we will deduct points.
-        test_dataset = get_dataset(test_csv, transform_test)
-        train_set, val_set = train_val_split(train_dataset)
+    test_dataset = get_dataset(test_csv, transform_test)
+    train_set, val_set = train_val_split(train_dataset)
     ###########################################################
 
-        dataloaders = train_dataloader, val_dataloder, test_dataloader
-        return dataloaders
+    train_dataloader, val_dataloder, test_dataloader = create_dataloaders(
+        train_set, val_set, test_dataset, args)
+
+    dataloaders = train_dataloader, val_dataloder, test_dataloader
+    return dataloaders

@@ -1,6 +1,6 @@
 # Modified by Colin Wang, Weitang Liu
 
-import model
+import model as model_py
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -14,17 +14,17 @@ def prepare_model(device, args=None):
         """
         if isinstance(m, nn.Conv2d):
             torch.nn.init.xavier_uniform_(m.weight.data, gain=1.0)
-            torch.nn.init.xavier_uniform_(m.bias.data, gain=1.0)
+            #torch.nn.init.xavier_uniform_(m.bias.data, gain=1.0)
 
     # load model, criterion, optimizer, and learning rate scheduler
-    learning_rate = args['learning_rate']
+    learning_rate = args['gamma']
     momentum = args['momentum']
     model_type = args['model']
 
-    model = model.get_model(model_type)
+    model = model_py.get_model(model_type)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(
-        model.parameters(), lr=learning_rate, momentum=momentum)
+        model.parameters(), lr=learning_rate)
     lr_scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
 
     model.apply(init_weights)
