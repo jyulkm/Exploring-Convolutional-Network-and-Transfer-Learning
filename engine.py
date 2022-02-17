@@ -14,7 +14,6 @@ def prepare_model(device, args=None):
         """
         if isinstance(m, nn.Conv2d):
             torch.nn.init.xavier_uniform_(m.weight.data, gain=1.0)
-            #torch.nn.init.xavier_uniform_(m.bias.data, gain=1.0)
 
     # load model, criterion, optimizer, and learning rate scheduler
     learning_rate = args['gamma']

@@ -72,7 +72,10 @@ def main(args):
     dataloaders = get_dataloaders('food-101/train.csv', 'food-101/test.csv', args)
     model, criterion, optimizer, lr_scheduler = prepare_model(device, args)
     
-    model = train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
+    num_epoch = args['epoch']
+    for epoch in range(num_epoch):
+        train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
+        test(model, device, dataloaders[2])
     
     print('Done')
 

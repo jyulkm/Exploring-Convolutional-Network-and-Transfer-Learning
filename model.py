@@ -24,7 +24,7 @@ class baseline(nn.Module):
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True)
         )
-        self.max_pool = nn.MaxPool1d(kernel_size=3)
+        self.max_pool = nn.MaxPool2d(kernel_size=3)
         # input channel 10, output channel 128
         self.conv4 = nn.Sequential(
             nn.Conv2d(128, 128, kernel_size=3, stride=2),

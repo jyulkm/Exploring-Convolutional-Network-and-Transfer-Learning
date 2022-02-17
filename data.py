@@ -48,9 +48,11 @@ def get_dataset(csv_path, transform):
     return FoodDataset(csv_path, transform)
 
 def create_dataloaders(train_set, val_set, test_set, args=None):
-    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
-    val_dataloder = DataLoader(val_set, batch_size=64, shuffle=True)
-    test_dataloader = DataLoader(test_set, batch_size=64, shuffle=True)
+    bsize = args['bz'] # batch size
+    
+    train_dataloader = DataLoader(train_set, batch_size=bsize, shuffle=True)
+    val_dataloder = DataLoader(val_set, batch_size=bsize, shuffle=True)
+    test_dataloader = DataLoader(test_set, batch_size=bsize, shuffle=True)
 
     return train_dataloader, val_dataloder, test_dataloader
 
