@@ -4,6 +4,7 @@ import os, sys, json
 from datetime import datetime
 from data import get_dataloaders
 from engine import *
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 
@@ -71,8 +72,44 @@ def main(args):
     device = torch.device("cuda:{}".format(args['device_id']) if torch.cuda.is_available() else "cpu")
     dataloaders = get_dataloaders('food-101/train.csv', 'food-101/test.csv', args)
     model, criterion, optimizer, lr_scheduler = prepare_model(device, args)
+
+    train_dataloader, val_dataloader, test_dataloader = dataloaders[0], dataloaders[1], dataloaders[2]
+    train_acc = []
+    train_loss = []
+    val_acc = []
+    val_loss = []
+
+    for epoch in range(25):
+        print(epoch)
+        model = train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
+        
+        _, val_ac, val_los = test(model, device, criterion, val_dataloader, test_data = False)
+        _, train_ac, train_los = test(model, device, criterion, train_dataloader, test_data = False)
+
+        train_acc.append(train_ac)
+        train_loss.append(train_los.item())
+        val_acc.append(val_ac) 
+        val_loss.append(val_los.item())
+
+    model = test(model, device, criterion, test_dataloader, test_data = True)
+    fig1 = plt.figure()
+    plt.title('Loss vs Epoch')
+    plt.plot(range(25), train_loss, label = 'train loss')
+    plt.plot(range(25), val_loss, label = 'validation loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend()
+    fig1.savefig('loss.png', bbox_inches='tight')
     
-    model = train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
+    
+    fig2 = plt.figure()
+    plt.title('Accuracy vs Epoch')
+    plt.plot(range(25), train_acc, label = 'train accuracy')
+    plt.plot(range(25), val_acc, label = 'validation accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend()
+    fig2.savefig('acuuracy.png', bbox_inches='tight')
 
 if __name__ == '__main__':
     main(args)
