@@ -93,8 +93,25 @@ class custom(nn.Module):
         return output
 
 
+
 class resnet(nn.Module):
-    pass
+    def __init__(self):
+        super(resnet, self).__init__()
+        self.model_resnet18 = models.resnet18(pretrained=True)
+        
+        n_features = self.model_resnet18.fc.in_features
+        self.model_resnet18.fc = nn.Linear(n_features, 20)
+        print(self.model_resnet18.fc)
+        
+        freeze_resnet(self.model_resnet18, True) #True: freeze layers, False: unfreeze layers
+
+def freeze_resnet(model, feature_extracting):
+    if feature_extracting:
+        for name, param in model.named_parameters():
+            if 'fc' in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
 
 
 class vgg(nn.Module):
