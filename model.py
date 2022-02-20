@@ -102,21 +102,20 @@ class vgg(nn.Module):
         super(vgg, self).__init__()
         self.model_vgg16 = models.vgg16(pretrained=True)
         
-        set_parameter_requires_grad(self.model_vgg16, False)
+        num_ftrs = self.model_vgg16.classifier[-1].in_features
+        self.model_vgg16.classifier[-1] = nn.Linear(num_ftrs, 20)
         
-        num_ftrs = self.model_vgg16.classifier[6].in_features
-
-        features = list(self.model_vgg16.classifier.children())[:-1]
-        features.extend([nn.Linear(num_ftrs, 20)])
-   
-        self.model_vgg16.classifier = nn.Sequential(*features)
+        set_parameter_requires_grad(self.model_vgg16, True)
 
 
                 
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
-        for param in model.parameters():
-            param.requires_grad = False
+        for name, param in model.named_parameters():
+            if 'classifier.6' in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
 
 
 def get_model(model_type):
