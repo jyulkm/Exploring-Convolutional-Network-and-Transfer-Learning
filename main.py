@@ -82,7 +82,6 @@ def main(args):
     for epoch in range(25):
         print(epoch)
         model = train_model(model, criterion, optimizer, lr_scheduler, device, dataloaders, args)
-        
         _, val_ac, val_los = test(model, device, criterion, val_dataloader, test_data = False)
         _, train_ac, train_los = test(model, device, criterion, train_dataloader, test_data = False)
 
