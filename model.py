@@ -105,7 +105,7 @@ class vgg(nn.Module):
         num_ftrs = self.model_vgg16.classifier[-1].in_features
         self.model_vgg16.classifier[-1] = nn.Linear(num_ftrs, 20)
         
-        set_parameter_requires_grad(self.model_vgg16, True)
+        set_parameter_requires_grad(self.model_vgg16, False)
 
 
                 
@@ -116,7 +116,6 @@ def set_parameter_requires_grad(model, feature_extracting):
                 param.requires_grad = True
             else:
                 param.requires_grad = False
-
 
 def get_model(model_type):
     if model_type == 'baseline':
