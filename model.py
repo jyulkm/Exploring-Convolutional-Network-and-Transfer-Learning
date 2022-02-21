@@ -57,7 +57,73 @@ class baseline(nn.Module):
 
 
 class custom(nn.Module):
-    pass
+    def __init__(self):
+        super(custom, self).__init__()
+        # input channel 1, output channel 64
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=5),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True)
+        )
+        # input channel 10, output channel 128
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=3),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        # input channel 10, output channel 128
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(128, 128, kernel_size=3),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        self.max_pool = nn.MaxPool2d(kernel_size=3)
+        # input channel 10, output channel 128
+        self.conv4 = nn.Sequential(
+            nn.Conv2d(128, 128, kernel_size=3, stride=2),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        self.conv5 = nn.Sequential(
+            nn.Conv2d(128, 128, kernel_size=3, stride=2),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        self.conv6 = nn.Sequential(
+            nn.Conv2d(128, 128, kernel_size=3, stride=2),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+        # fully connected layer (fc layer)
+        self.fc1 = nn.Sequential(
+            nn.Linear(128, 256),
+            nn.Dropout(),
+            nn.ReLU(inplace=True)
+        )
+        self.fc2 = nn.Linear(256, 20)
+        
+    def forward(self, x):
+      
+        # Forward pass through
+        x1 = self.conv1(x)
+        x2 = self.conv2(x1)
+        x3 = self.conv3(x2)
+        
+        max_pool = self.max_pool(x3)
+        
+        x4 = self.conv4(max_pool)
+        x5 = self.conv5(x4)        
+        x6 = self.conv6(x5)
+        
+        avg_pool = self.avg_pool(x6)
+        # flatten the cnn features to feed the fully connected layer
+        flat = avg_pool.view(-1, 128)
+        
+        x7 = self.fc1(flat)
+        output = self.fc2(x7)
+        
+        return output
 
 
 class resnet(nn.Module):

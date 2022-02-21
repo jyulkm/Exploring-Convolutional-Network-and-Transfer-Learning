@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
+import numpy as np
 
 
 def prepare_model(device, args=None):
@@ -34,6 +35,7 @@ def prepare_model(device, args=None):
 
 def train_model(model, criterion, optimizer, scheduler, device, dataloaders, args=None):
     train_dataloader = dataloaders[0]
+    validation_dataloader = dataloaders[1]
 
     model.train()
     for batch_idx, (data, target) in enumerate(train_dataloader):
@@ -44,8 +46,13 @@ def train_model(model, criterion, optimizer, scheduler, device, dataloaders, arg
         loss.backward()  # compute gradient for every variables with requires_grad=True
         optimizer.step()  # applied gradient to update the weights
 
+    _, train_acc, train_loss = test(model, device, train_dataloader, criterion)
+    _, val_acc, val_loss = test(model, device, validation_dataloader, criterion)
 
-def test(model, device, test_loader):
+    return train_loss, train_acc, val_loss, val_acc
+
+
+def test(model, device, test_loader, criterion):
     model.eval()  # sets model in evaluation (inference) mode. Q3. Why?
     test_loss = 0
     correct = 0
@@ -56,10 +63,13 @@ def test(model, device, test_loader):
             # get the index of maximum fc output. Q4. Why?
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
-    test_loss /= len(test_loader.dataset)
+            test_loss += criterion(output, target).item()
+        test_loss /= len(test_loader.dataset)
+        
+#     print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(
+#         correct, len(test_loader.dataset),
+#         100. * correct / len(test_loader.dataset)))
+    
+    percent_correct = (100. * correct / len(test_loader.dataset))
 
-    print('\nTest set: Accuracy: {}/{} ({:.0f}%)\n'.format(
-        correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
-
-    return model  # return the model with weight selected by best performance
+    return model, percent_correct, test_loss  # return the model with weight selected by best performance

@@ -50,9 +50,9 @@ def get_dataset(csv_path, transform):
 def create_dataloaders(train_set, val_set, test_set, args=None):
     bsize = args['bz'] # batch size
     
-    train_dataloader = DataLoader(train_set, batch_size=bsize, shuffle=True)
-    val_dataloder = DataLoader(val_set, batch_size=bsize, shuffle=True)
-    test_dataloader = DataLoader(test_set, batch_size=bsize, shuffle=True)
+    train_dataloader = DataLoader(train_set, batch_size=bsize, shuffle=True, num_workers=1)
+    val_dataloder = DataLoader(val_set, batch_size=bsize, shuffle=True, num_workers=1)
+    test_dataloader = DataLoader(test_set, batch_size=bsize, shuffle=True, num_workers=1)
 
     return train_dataloader, val_dataloder, test_dataloader
 
