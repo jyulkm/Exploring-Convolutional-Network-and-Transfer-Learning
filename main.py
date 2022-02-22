@@ -72,11 +72,24 @@ args = vars(parser.parse_args())
 
 def main(args):
     device = torch.device("cuda:{}".format(args['device_id']) if torch.cuda.is_available() else "cpu")
+    if args['model'] == '7a':
+        model = joblib.load('custom.pkl')
+        for i in range(64):
+            curr_w_conv1 = np.asarray(model.conv1[0].weight[i].T.cpu().detach())
+            if i+1 < 10:
+                fn = 'conv1_w0'+str(i+1)+'.png'
+            else:
+                fn = 'conv1_w'+str(i+1)+'.png'
+            plt.imsave('Conv1 Weight Visualization/' + fn, curr_w_conv1 + np.abs(np.min(curr_w_conv1)))
+        raise ValueError
+    if args['model'] == '7b':
+        model = joblib.load('custom.pkl')
+        test_loader = get_dataloaders('food-101/train.csv', 'food-101/test.csv', args)[2]
+        input_d = test_loader.dataset[0][0].view(1,3,224,224).to(device)
+        print(model.forward(input_d))
+        raise ValueError
     dataloaders = get_dataloaders('food-101/train.csv', 'food-101/test.csv', args)
     model, criterion, optimizer, lr_scheduler = prepare_model(device, args)
-    
-    #print(np.sum(np.asarray(model.conv1[0].weight[0].T.cpu().detach()) < 0))
-    #plt.imsave('test-image', np.asarray(model.conv1[0].weight[0].T.cpu().detach()))
     
     if args['model'] == 'baseline':
         
@@ -152,7 +165,7 @@ def main(args):
             
         _, test_acc, _ = test(model, device, dataloaders[2], criterion)
         
-        joblib.dump(knn, 'custom.pkl') # saving custom model to pickled file
+        joblib.dump(model, 'custom3.pkl') # saving custom model to pickled file
         
         # Custom model training and validation accuracy plot
         plt.scatter(np.arange(num_epoch), train_accuracies, color='blue')
@@ -173,6 +186,7 @@ def main(args):
         plt.savefig('custom_loss.png')
         
         print('Custom model final test accuracy: ', test_acc)
+    
     
     print('Done')
 
